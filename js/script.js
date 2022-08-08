@@ -1,5 +1,7 @@
 const todos = [];
 const RENDER_EVENT = 'render-todo';
+const SAVED_EVENT = 'saved-todo';
+const STORAGE_KEY = 'TODO-APPS';
 
 document.addEventListener('DOMContentLoaded', function() {
     /*Kode di atas adalah sebuah listener yang akan menjalankan kode yang ada didalamnya ketika 
@@ -26,6 +28,7 @@ const addTodo = () => {
     todos.push(todoObject);
 
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 const generatedId = () => {
@@ -96,6 +99,7 @@ const addTaskToComplated = (todoId) => {
 
     todoTarget.isCompilated = true;
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 const findTodo = (todoId) => {
@@ -122,6 +126,7 @@ const removeTaskFromComplated = (todoId) => {
 
     todos.splice(todoTarget, 1);
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 const undoTaskFromComplated = (todoId) => {
@@ -131,6 +136,7 @@ const undoTaskFromComplated = (todoId) => {
 
     todoTarget.isCompilated = false;
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 
@@ -152,4 +158,24 @@ document.addEventListener(RENDER_EVENT, () => {
     }
 });
 
+
+const saveData = () => {
+    if(isStorageExist()) {
+        const parsed = JSON.stringify(todos);
+        localStorage.setItem(STORAGE_KEY, parsed);
+        document.dispatchEvent(new Event(SAVED_EVENT));
+    }
+}
+
+const isStorageExist = () => {
+    if(typeof (Storage) === 'undefined') {
+        alert('browser tidak mendukung local storage');
+        return false;
+    }
+    return true;
+}
+
+document.addEventListener('SAVED_EVENT', () => {
+    console.log(localStorage.getItem(STORAGE_KEY));
+});
 
